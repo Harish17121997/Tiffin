@@ -141,15 +141,19 @@ async function submit() {
 async function loadCounts() {
   isLoading.value = true
   try {
-    const res = await fetch(API_URL)
+    const res = await fetch(`${API_URL}?t=${Date.now()}`, {
+      cache: 'no-store'
+    })
     const data = await res.json()
 
     counts.value = {
-      regular: data.regular || 0,
-      one: data.one || 0,
-      two: data.two || 0,
-      khichadi: data.khichadi || 0
+      regular: Number(data.regular) || 0,
+      one: Number(data.one) || 0,
+      two: Number(data.two) || 0,
+      khichadi: Number(data.khichadi) || 0
     }
+  } catch (err) {
+    console.error('Failed to load counts', err)
   } finally {
     isLoading.value = false
   }
@@ -157,12 +161,18 @@ async function loadCounts() {
 
 /* ================= INIT ================= */
 onMounted(() => {
-  if (localStorage.getItem(storageKey)) {
+  const lastSubmitDate = localStorage.getItem('last_submit_date')
+  if (lastSubmitDate === todayKey) {
     isDisabled.value = true
     submitted.value = true
+  } else {
+    localStorage.removeItem('last_submit_date')
+    isDisabled.value = false
+    submitted.value = false
   }
   loadCounts()
 })
+
 </script>
 <style scoped>
 .container {
