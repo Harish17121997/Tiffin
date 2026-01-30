@@ -41,8 +41,8 @@
 
         <div
           class="option"
-          :class="{ active: selected === 'Sabhu Khichadi', disabled: isDisabled }"
-          @click="!isDisabled && selectOption('Sabhu Khichadi')"
+          :class="{ active: selected === 'Sabudana Khichadi', disabled: isDisabled }"
+          @click="!isDisabled && selectOption('Sabudana Khichadi')"
         >
           Sabudana Khichadi
         </div>
