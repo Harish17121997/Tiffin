@@ -129,6 +129,7 @@ async function submit() {
     })
 
     localStorage.setItem(storageKey, 'true')
+    localStorage.setItem('last_submit_date', todayKey)
     submitted.value = true
     isDisabled.value = true
 
@@ -141,9 +142,10 @@ async function submit() {
 async function loadCounts() {
   isLoading.value = true
   try {
-    const res = await fetch(`${API_URL}?t=${Date.now()}`, {
-      cache: 'no-store'
-    })
+    const res = await fetch(
+      `${API_URL}?date=${todayKey}&t=${Date.now()}`,
+      { cache: 'no-store' }
+    )
     const data = await res.json()
 
     counts.value = {
