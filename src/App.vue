@@ -8,54 +8,63 @@
 
     <!-- Card -->
     <div class="card">
-      <h2>🍱 Select Your Tiffin</h2>
-
-      <div
-        class="option"
-        :class="{ active: selected === 'Regular Tiffin', disabled: isDisabled }"
-        @click="!isDisabled && selectOption('Regular Tiffin')"
-      >
-        Regular Tiffin
+      <div v-if="isLoading" class="page-loader">
+        <div class="spinner big"></div>
+        <p>Loading tiffin counts...</p>
       </div>
+      <div v-else>
+        <h2>🍱 Select Your Tiffin</h2>
 
-      <div
-        class="option"
-        :class="{ active: selected === '1 Bhakari', disabled: isDisabled }"
-        @click="!isDisabled && selectOption('1 Bhakari')"
-      >
-        1 Bhakari
-      </div>
+        <div
+          class="option"
+          :class="{ active: selected === 'Regular Tiffin', disabled: isDisabled }"
+          @click="!isDisabled && selectOption('Regular Tiffin')"
+        >
+          Regular Tiffin
+        </div>
 
-      <div
-        class="option"
-        :class="{ active: selected === '2 Bhakari', disabled: isDisabled }"
-        @click="!isDisabled && selectOption('2 Bhakari')"
-      >
-        2 Bhakari
-      </div>
+        <div
+          class="option"
+          :class="{ active: selected === '1 Bhakari', disabled: isDisabled }"
+          @click="!isDisabled && selectOption('1 Bhakari')"
+        >
+          1 Bhakari
+        </div>
 
-      <div
-        class="option"
-        :class="{ active: selected === 'Sabhu Khichadi', disabled: isDisabled }"
-        @click="!isDisabled && selectOption('Sabhu Khichadi')"
-      >
-        Sabudana khichdi
-      </div>
+        <div
+          class="option"
+          :class="{ active: selected === '2 Bhakari', disabled: isDisabled }"
+          @click="!isDisabled && selectOption('2 Bhakari')"
+        >
+          2 Bhakari
+        </div>
 
-      <button :disabled="isDisabled" @click="submit">
-        {{ isDisabled ? 'Already Submitted' : 'Submit' }}
-      </button>
+        <div
+          class="option"
+          :class="{ active: selected === 'Sabhu Khichadi', disabled: isDisabled }"
+          @click="!isDisabled && selectOption('Sabhu Khichadi')"
+        >
+          Sabudana khichdi
+        </div>
 
-      <p v-if="submitted" class="success">
-        ✅ Submitted successfully
-      </p>
+        <button :disabled="isDisabled || isSubmitting" @click="submit">
+          <span v-if="isSubmitting" class="spinner"></span>
+          <span v-else>
+            {{ isDisabled ? 'Already Submitted' : 'Submit' }}
+          </span>
+        </button>
 
-      <div class="counts">
-        <p>Regular: {{ counts.regular }}</p>
-        <p>1 Bhakari: {{ counts.one }}</p>
-        <p>2 Bhakari: {{ counts.two }}</p>
-        <p>Sabudana khichdi: {{ counts.khichadi }}</p>
-        <p class="total">Total Tiffins: {{ totalTiffins }}</p>
+        <p v-if="submitted" class="success">
+          ✅ Submitted successfully
+        </p>
+
+        <div class="counts">
+          <p>Regular: {{ counts.regular }}</p>
+          <p>1 Bhakari: {{ counts.one }}</p>
+          <p>2 Bhakari: {{ counts.two }}</p>
+          <p>Sabudana khichdi: {{ counts.khichadi }}</p>
+          <p class="total">Total Tiffins: {{ totalTiffins }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -82,6 +91,8 @@ const storageKey = `tiffin_submitted_${todayKey}`
 const selected = ref('')
 const submitted = ref(false)
 const isDisabled = ref(false)
+const isSubmitting = ref(false)   // submit button loader
+const isLoading = ref(true)       // initial page loader
 
 const counts = ref({
   regular: 0,
@@ -100,37 +111,47 @@ const totalTiffins = computed(() => {
 })
 
 async function submit() {
-  if (isDisabled.value) return
+  if (isDisabled.value || isSubmitting.value) return
 
   if (!selected.value) {
     alert('Please select one option')
     return
   }
 
-  await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      selection: selected.value
+  try {
+    isSubmitting.value = true
+
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        selection: selected.value
+      })
     })
-  })
 
-  localStorage.setItem(storageKey, 'true')
-  submitted.value = true
-  isDisabled.value = true
+    localStorage.setItem(storageKey, 'true')
+    submitted.value = true
+    isDisabled.value = true
 
-  loadCounts()
+    await loadCounts()
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 async function loadCounts() {
-  const res = await fetch(API_URL)
-  const data = await res.json()
+  isLoading.value = true
+  try {
+    const res = await fetch(API_URL)
+    const data = await res.json()
 
-  // If new option not present, default 0
-  counts.value = {
-    regular: data.regular || 0,
-    one: data.one || 0,
-    two: data.two || 0,
-    khichadi: data.khichadi || 0
+    counts.value = {
+      regular: data.regular || 0,
+      one: data.one || 0,
+      two: data.two || 0,
+      khichadi: data.khichadi || 0
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -295,5 +316,40 @@ button:disabled {
   margin-top: 10px;
   box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
 }
+/* Spinner */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.spinner.big {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+  border-top-color: #16a34a;
+}
+
+/* Page loader */
+.page-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+  color: #374151;
+  font-weight: 600;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 </style>
