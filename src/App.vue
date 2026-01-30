@@ -44,7 +44,7 @@
           :class="{ active: selected === 'Sabhu Khichadi', disabled: isDisabled }"
           @click="!isDisabled && selectOption('Sabhu Khichadi')"
         >
-          Sabudana khichdi
+          Sabudana Khichadi
         </div>
 
         <button :disabled="isDisabled || isSubmitting" @click="submit">
