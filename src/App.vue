@@ -75,7 +75,7 @@ import { ref, onMounted, computed } from 'vue'
 
 /* ================= CONFIG ================= */
 const API_URL =
-  'https://script.google.com/macros/s/AKfycby7HN36mnpMYkDByrPeY3RJRhL2Wr-WFy3kYzWmYqanTgUt4DA5aD9i1fbxkFOq3KpkbQ/exec'
+  'https://script.google.com/macros/s/AKfycbymWn16bZ5vDjEJ4zt53Uxd5JTnTYUkcI0CuVAgjT9J3vCMyS0GuMlKi0uQfa8YpSrKOg/exec'
 
 /* ================= DATE ================= */
 const todayKey = new Date().toISOString().split('T')[0]
@@ -142,24 +142,25 @@ async function submit() {
 async function loadCounts() {
   isLoading.value = true
   try {
-    const res = await fetch(
-      `${API_URL}?date=${todayKey}&t=${Date.now()}`,
-      { cache: 'no-store' }
-    )
+    const res = await fetch(API_URL, {
+      method: 'POST'
+    })
     const data = await res.json()
+    console.log('Count load success', data)
 
     counts.value = {
-      regular: Number(data.regular) || 0,
-      one: Number(data.one) || 0,
-      two: Number(data.two) || 0,
-      khichadi: Number(data.khichadi) || 0
+      regular: data.regular || 0,
+      one: data.one || 0,
+      two: data.two || 0,
+      khichadi: data.khichadi || 0
     }
-  } catch (err) {
-    console.error('Failed to load counts', err)
+  } catch (e) {
+    console.error('Count load failed', e)
   } finally {
     isLoading.value = false
   }
 }
+
 
 /* ================= INIT ================= */
 onMounted(() => {
