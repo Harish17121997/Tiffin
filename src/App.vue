@@ -13,6 +13,9 @@
         <p>Loading tiffin counts...</p>
       </div>
       <div v-else>
+        <p v-if="!canSubmitNow" style="color:red; margin-top:10px">
+          ⏰ Submission: 9:00 AM – 1:00 PM. Timing matters 🙂
+        </p>
         <h2>🍱 Select Your Tiffin</h2>
 
         <div
@@ -45,9 +48,9 @@
           @click="!isDisabled && selectOption('Sabudana Khichadi')"
         >
           Sabudana Khichadi
-        </div>
+        </div> 
 
-        <button :disabled="isDisabled || isSubmitting" @click="submit">
+        <button :disabled="isDisabled || isSubmitting || !canSubmitNow" @click="submit">
           <span v-if="isSubmitting" class="spinner"></span>
           <span v-else>
             {{ isDisabled ? 'Already Submitted' : 'Submit' }}
@@ -139,6 +142,12 @@ async function submit() {
   }
 }
 
+const canSubmitNow = computed(() => {
+  const h = new Date().getHours()
+  return h >= 9 && h < 13
+})
+
+
 async function loadCounts() {
   isLoading.value = true
   try {
@@ -146,7 +155,6 @@ async function loadCounts() {
       method: 'POST'
     })
     const data = await res.json()
-    console.log('Count load success', data)
 
     counts.value = {
       regular: data.regular || 0,
