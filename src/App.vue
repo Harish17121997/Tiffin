@@ -441,6 +441,7 @@ onMounted(async () => {
   height: 45px;
   border-width: 4px;
   border-top-color: #3e81b8;
+  margin-bottom: 20px;
 }
 
 .spinner {
