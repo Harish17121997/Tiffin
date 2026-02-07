@@ -253,7 +253,6 @@ onMounted(async () => {
   padding: 30px;
   border-radius: 24px;
 }
-
 .title {
   text-align: center;
   margin-bottom: 18px;
