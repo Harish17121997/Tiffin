@@ -4,12 +4,10 @@
     <header class="top-bar">
       <h1>Samruddh Bharat Technologies</h1>
     </header>
-
     <div class="date-text">
       Tiffin Date: {{ todayDisplay }}
     </div>
 
-    <!-- Main Card -->
     <div class="card">
       <div v-if="isLoading" class="page-loader">
         <div class="spinner big"></div>
@@ -55,7 +53,6 @@
           ✅ Submitted successfully
         </p>
 
-        <!-- Counts -->
         <div class="counts-section">
           <button class="camera-btn" @click="takeScreenshot">📸</button>
           <div class="counts-wrapper" ref="countsRef">
