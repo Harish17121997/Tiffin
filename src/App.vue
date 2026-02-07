@@ -463,8 +463,8 @@ onMounted(async () => {
 /*  ===== ORDER FOOTER ===== */
 .order-footer {
   position: fixed;
-  right: 20px;
-  bottom: 40px;
+  right: 15px;
+  bottom: 15px;
   width: 250px;
   background: #ffffff;
   border-radius: 16px;
