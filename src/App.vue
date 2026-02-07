@@ -56,7 +56,8 @@
         </p>
 
         <!-- Counts -->
-        <div class="counts-section"> <button class="camera-btn" @click="takeScreenshot">📸</button>
+        <div class="counts-section">
+          <button class="camera-btn" @click="takeScreenshot">📸</button>
           <div class="counts-wrapper" ref="countsRef">
             <div class="screenshot-date"> 📅 {{ todayDisplay }}</div>
             <div class="counts">
@@ -70,7 +71,23 @@
               </div>
             </div>
           </div>
+
+          <!-- 👇 HERE (inside card) -->
+          <div class="order-footer">
+            <h3>Today's Orders <span style="color: red; padding-left: 10px;"> {{ totalTiffins }}</span></h3>
+
+            <div v-if="orderNames.length === 0" class="no-orders">
+              No orders yet
+            </div>
+
+            <ul v-else class="orders-list">
+              <li v-for="(n, i) in orderNames" :key="i">
+                {{ n }}
+              </li>
+            </ul>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -96,6 +113,7 @@ const isSubmitting = ref(false)
 const submitted = ref(false)
 const isLoading = ref(true)
 const nameError = ref('')
+const orderNames = ref([])
 
 const counts = ref({
   regular: 0,
@@ -129,6 +147,7 @@ async function loadCounts() {
       two: data.two || 0,
       khichadi: data.khichadi || 0
     }
+    orderNames.value = data.names || []
   } finally {
     isLoading.value = false
   }
@@ -175,7 +194,7 @@ async function takeScreenshot() {
   })
 
   const link = document.createElement('a')
-  link.download = 'tiffin-counts.png'
+  link.download = 'Todays-tiffin-counts.png'
   link.href = canvas.toDataURL()
   link.click()
 }
@@ -188,6 +207,8 @@ onMounted(async () => {
 /* ================= RESET ================= */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* ================= PAGE ================= */
@@ -439,5 +460,66 @@ onMounted(async () => {
   to {
     transform: rotate(360deg);
   }
+}
+
+/*  ===== ORDER FOOTER ===== */
+.order-footer {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  width: 250px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  border: 2px solid #22c55e;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+
+}
+
+/* heading */
+.order-footer h3 {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #065f46;
+  font-weight: 700;
+}
+
+/* list */
+.orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 230px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* each name row */
+.orders-list li {
+  padding: 6px 8px;
+  font-size: 13px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+/* empty text */
+.no-orders {
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+
+  .order-footer {
+    position: static;
+    width: 100%;
+    margin-top: 16px;
+    right: auto;
+    top: auto;
+  }
+
 }
 </style>
