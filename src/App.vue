@@ -131,7 +131,7 @@ const totalTiffins = computed(() =>
 
 const canSubmitNow = computed(() => {
   const h = new Date().getHours()
-  return h >= 9 && h < 16
+  return h >= 9 && h < 11
 })
 
 async function loadCounts() {
