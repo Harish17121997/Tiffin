@@ -22,7 +22,7 @@
         <div>
           <label for="name" class="form-label">Name:<span class="required">*</span></label>
           <input class="field" type="text" placeholder="Enter your name" v-model="name"
-            :disabled="isDisabled || !canSubmitNow" oninput="this.value = this.value.toUpperCase()" />
+            :disabled="isDisabled || !canSubmitNow" @input="name = name.toUpperCase()"/>
         </div>
         <!-- Select -->
         <div class="select-wrapper">
@@ -129,7 +129,7 @@ const totalTiffins = computed(() =>
 
 const canSubmitNow = computed(() => {
   const h = new Date().getHours()
-  return h >= 9 && h < 11
+  return h >= 9 && h < 19
 })
 
 async function loadCounts() {
@@ -208,9 +208,16 @@ onMounted(async () => {
   const saved = localStorage.getItem('tiffinSubmission')
   if (saved) {
     const data = JSON.parse(saved)
-    if (data.date === todayKey) {
+
+    // same day AND name already present in sheet
+    const alreadyOrdered = orderNames.value.some(
+      n => n.toUpperCase() === data.name
+    )
+
+    if (data.date === todayKey && alreadyOrdered) {
       isDisabled.value = true
       submitted.value = true
+      name.value = data.name
     } else {
       localStorage.removeItem('tiffinSubmission')
     }
