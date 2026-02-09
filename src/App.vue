@@ -111,6 +111,7 @@ const submitted = ref(false)
 const isLoading = ref(true)
 const nameError = ref('')
 const orderNames = ref([])
+const todayKey = new Date().toISOString().slice(0, 10)
 
 const counts = ref({
   regular: 0,
@@ -170,11 +171,18 @@ async function submit() {
 
     submitted.value = true
     isDisabled.value = true
+    localStorage.setItem(
+      'tiffinSubmission',
+      JSON.stringify({
+        date: todayKey,
+        name: name.value.trim().toUpperCase()
+      })
+    )
 
     // reload counts after submit
     await loadCounts()
   } catch (e) {
-    alert('Something went wrong')
+    console.error('Something went wrong:', e)
   } finally {
     isSubmitting.value = false
     nameError.value = ''
@@ -197,6 +205,16 @@ async function takeScreenshot() {
 }
 
 onMounted(async () => {
+  const saved = localStorage.getItem('tiffinSubmission')
+  if (saved) {
+    const data = JSON.parse(saved)
+    if (data.date === todayKey) {
+      isDisabled.value = true
+      submitted.value = true
+    } else {
+      localStorage.removeItem('tiffinSubmission')
+    }
+  }
   await loadCounts()
 })
 </script>
