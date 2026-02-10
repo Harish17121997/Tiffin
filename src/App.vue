@@ -22,7 +22,7 @@
         <div>
           <label for="name" class="form-label">Name:<span class="required">*</span></label>
           <input class="field" type="text" placeholder="Enter your name" v-model="name"
-            :disabled="isDisabled || !canSubmitNow" @input="name = name.toUpperCase()"/>
+            :disabled="isDisabled || !canSubmitNow" @input="name = name.toUpperCase()" />
         </div>
         <!-- Select -->
         <div class="select-wrapper">
@@ -41,8 +41,8 @@
 
 
         <!-- Submit -->
-        <button class="submit-btn"
-          :disabled="isDisabled || isSubmitting || !canSubmitNow || foodType === '' || name === ''" @click="submit">
+        <button class="submit-btn" :disabled="isDisabled || isSubmitting || !canSubmitNow || !foodType || !name"
+          @click="submit">
           <span v-if="isSubmitting" class="spinner"></span>
           <span v-else>
             {{ isDisabled ? 'Already Submitted' : 'Submit' }}
@@ -111,7 +111,7 @@ const submitted = ref(false)
 const isLoading = ref(true)
 const nameError = ref('')
 const orderNames = ref([])
-const todayKey = new Date().toISOString().slice(0, 10)
+const todayKey = new Date().toLocaleDateString('en-IN')
 
 const counts = ref({
   regular: 0,
@@ -153,41 +153,44 @@ async function loadCounts() {
 
 
 async function submit() {
-  // validation first
-  if (!name.value) {
+
+  if (!name.value.trim()) {
     nameError.value = 'Name is required'
     return
   }
+  if (!foodType.value) return
+  const cleanName = name.value.trim().toUpperCase()
+  name.value = cleanName
+  if (isSubmitting.value || isDisabled.value) return
   isSubmitting.value = true
 
   try {
     await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({
-        name: name.value,
+        name: cleanName,
         selection: foodType.value
       })
     })
 
-    submitted.value = true
+    // LOCK IMMEDIATELY (very important)
     isDisabled.value = true
+    submitted.value = true
     localStorage.setItem(
       'tiffinSubmission',
       JSON.stringify({
         date: todayKey,
-        name: name.value.trim().toUpperCase()
+        name: cleanName,
+        selection: foodType.value
       })
     )
 
-    // reload counts after submit
     await loadCounts()
   } catch (e) {
-    console.error('Something went wrong:', e)
+    console.error(e)
   } finally {
     isSubmitting.value = false
     nameError.value = ''
-    foodType.value = ''
-    name.value = ''
   }
 }
 
@@ -208,22 +211,38 @@ onMounted(async () => {
   const saved = localStorage.getItem('tiffinSubmission')
   if (saved) {
     const data = JSON.parse(saved)
-
-    // same day AND name already present in sheet
-    const alreadyOrdered = orderNames.value.some(
-      n => n.toUpperCase() === data.name
-    )
-
-    if (data.date === todayKey && alreadyOrdered) {
+    if (data.date === todayKey) {
       isDisabled.value = true
       submitted.value = true
       name.value = data.name
+      foodType.value = data.selection || ''
     } else {
       localStorage.removeItem('tiffinSubmission')
     }
   }
   await loadCounts()
+  if (!isDisabled.value) {
+    const cleanName = name.value.trim().toUpperCase()
+    const alreadyOrdered = orderNames.value.some(
+      n => n.trim().toUpperCase() === cleanName
+    )
+
+    if (alreadyOrdered) {
+      isDisabled.value = true
+      submitted.value = true
+      name.value = cleanName
+
+      localStorage.setItem(
+        'tiffinSubmission',
+        JSON.stringify({
+          date: todayKey,
+          name: cleanName
+        })
+      )
+    }
+  }
 })
+
 </script>
 <style scoped>
 /* ================= RESET ================= */
