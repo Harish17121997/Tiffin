@@ -375,10 +375,11 @@ onMounted(async () => {
 .success-msg {
   margin-top: 12px;
   text-align: center;
-  color: #15803d;
+  color: #0a602a;
   background: #ecfdf5;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 25px;
+  border: 1px solid #4acd4a;
 }
 
 /* ================= COUNTS ================= */
