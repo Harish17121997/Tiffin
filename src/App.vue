@@ -15,7 +15,7 @@
       </div>
       <div v-else>
         <p v-if="!canSubmitNow" class="time-warning" style="color:red; margin-top:1px; text-align: center;">
-          ⏰ Submission: 9:00 AM – 11:00 AM. Timing matters 🙂
+          ⏰ Submission: 8:30 AM – 10:00 AM. Timing matters 🙂
         </p>
         <h2 class="title">🍱 Tiffin Selection</h2>
         <!-- Name -->
@@ -58,11 +58,11 @@
           <div class="counts-wrapper" ref="countsRef">
             <div class="screenshot-date"> 📅 {{ todayDisplay }}</div>
             <div class="counts">
-              <div class="count-box">Regular: {{ counts.regular }}</div>
-              <div class="count-box">1 Poli: {{ counts.poli }}</div>
-              <div class="count-box">1 Bhakari: {{ counts.one }}</div>
-              <div class="count-box">2 Bhakari: {{ counts.two }}</div>
-              <div class="count-box">Khichadi: {{ counts.khichadi }}</div>
+              <div v-if="counts.regular > 0" class="count-box">Regular: {{ counts.regular }}</div>
+              <div v-if="counts.poli > 0" class="count-box">1 Poli: {{ counts.poli }}</div>
+              <div v-if="counts.one > 0" class="count-box">1 Bhakari: {{ counts.one }}</div>
+              <div v-if="counts.two > 0" class="count-box">2 Bhakari: {{ counts.two }}</div>
+              <div v-if="counts.khichadi > 0" class="count-box">Khichadi: {{ counts.khichadi }}</div>
               <div class="count-box total">
                 Total Tiffins: {{ totalTiffins }}
               </div>
@@ -128,8 +128,9 @@ const totalTiffins = computed(() =>
 )
 
 const canSubmitNow = computed(() => {
-  const h = new Date().getHours()
-  return h >= 9 && h < 11
+  const now = new Date()
+  const h = now.getHours() + now.getMinutes() / 100
+  return h >= 8.30 && h < 10
 })
 
 async function loadCounts() {
@@ -396,7 +397,7 @@ onMounted(async () => {
   height: 34px;
   border-radius: 50%;
   border: none;
-  background: #16a34a;
+  background: #bfcef4;
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -511,13 +512,13 @@ onMounted(async () => {
   right: 15px;
   bottom: 15px;
   width: 250px;
-  background: #ffffff;
+  /* background: #ffffff; */
   border-radius: 16px;
   padding: 14px;
-  border: 2px solid #22c55e;
+  border: 2px solid #b6b6b6;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
   z-index: 999;
-
+  color: #e2f4ef;
 }
 
 /* heading */
@@ -525,7 +526,7 @@ onMounted(async () => {
   text-align: center;
   font-size: 14px;
   margin-bottom: 8px;
-  color: #065f46;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -562,6 +563,10 @@ onMounted(async () => {
     margin-top: 16px;
     right: auto;
     top: auto;
+    color: #1e1f1f;
+  } 
+  .order-footer h3 {
+    color: #1e1f1f;
   }
 
 }
