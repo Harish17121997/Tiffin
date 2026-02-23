@@ -68,6 +68,7 @@
               </div>
             </div>
           </div>
+          <button v-if="whatsApp && !canSubmitNow" class="whatsapp-btn" @click="sendToWhatsApp">Share on WhatsApp </button>
 
           <!-- 👇 HERE (inside card) -->
           <div class="order-footer">
@@ -111,6 +112,7 @@ const submitted = ref(false)
 const isLoading = ref(true)
 const nameError = ref('')
 const orderNames = ref([])
+const whatsApp = ref(false)
 const todayKey = new Date().toLocaleDateString('en-IN')
 
 const counts = ref({
@@ -195,6 +197,32 @@ async function submit() {
   }
 }
 
+function sendToWhatsApp() {
+  let message = `Today Date: ${todayDisplay}\n\n Tiffin Orders:\n`
+
+  if (counts.value.regular > 0)
+    message += `1) Regular Tiffin : ${counts.value.regular}\n`
+
+  if (counts.value.poli > 0)
+    message += `2) 1 Poli : ${counts.value.poli}\n`
+
+  if (counts.value.one > 0)
+    message += `3) 1 Bhakari : ${counts.value.one}\n`
+
+  if (counts.value.two > 0)
+    message += `4) 2 Bhakari : ${counts.value.two}\n`
+
+  if (counts.value.khichadi > 0)
+    message += `5) Sabudana Khichadi : ${counts.value.khichadi}\n`
+
+  message += `\n Total Tiffins : ${totalTiffins.value}`
+
+  const encodedMsg = encodeURIComponent(message)
+  const whatsappURL = `https://wa.me/?text=${encodedMsg}`
+
+  window.open(whatsappURL, '_blank')
+}
+
 
 async function takeScreenshot() {
   const canvas = await html2canvas(countsRef.value, {
@@ -217,6 +245,9 @@ onMounted(async () => {
       submitted.value = true
       name.value = data.name
       foodType.value = data.selection || ''
+      if (name.value == 'HARISH' || name.value == 'DHAWAL' || name.value == 'YOGESH') {
+        whatsApp.value = true
+      }
     } else {
       localStorage.removeItem('tiffinSubmission')
     }
@@ -553,6 +584,24 @@ onMounted(async () => {
   color: #64748b;
   font-size: 13px;
 }
+.whatsapp-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(120deg, #25d366, #128c7e);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.whatsapp-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(37, 211, 102, 0.4);
+}
 
 /* Mobile view */
 @media (max-width: 768px) {
@@ -568,6 +617,24 @@ onMounted(async () => {
   .order-footer h3 {
     color: #1e1f1f;
   }
+  .whatsapp-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(120deg, #25d366, #128c7e);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.whatsapp-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(37, 211, 102, 0.4);
+}
 
 }
 </style>
