@@ -67,7 +67,10 @@
                 Total Tiffins: {{ totalTiffins }}
               </div>
             </div>
-          </div>
+          </div> 
+          <span v-if="!canSubmitNow" style="color: red; margin-top: 2px; display: block; text-align: center;">
+            or
+          </span>
           <button v-if="whatsApp && !canSubmitNow" class="whatsapp-btn" @click="sendToWhatsApp">Share on WhatsApp </button>
 
           <!-- 👇 HERE (inside card) -->
@@ -585,7 +588,7 @@ onMounted(async () => {
   font-size: 13px;
 }
 .whatsapp-btn {
-  margin-top: 12px;
+  margin-top: 8px;
   width: 100%;
   padding: 12px;
   border-radius: 14px;
@@ -618,23 +621,23 @@ onMounted(async () => {
     color: #1e1f1f;
   }
   .whatsapp-btn {
-  margin-top: 12px;
-  width: 100%;
-  padding: 12px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(120deg, #25d366, #128c7e);
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
+    margin-top: 6px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(120deg, #25d366, #128c7e);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
 
-.whatsapp-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(37, 211, 102, 0.4);
-}
+  .whatsapp-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(37, 211, 102, 0.4);
+  }
 
 }
 </style>
