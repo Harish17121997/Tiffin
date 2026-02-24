@@ -289,7 +289,7 @@ onMounted(async () => {
 
 /* ================= PAGE ================= */
 .page {
-  min-height: 100vh;
+  min-height: 98vh;
   background: linear-gradient(135deg, #0f172a, #1e293b);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 1px 3px 10px;
