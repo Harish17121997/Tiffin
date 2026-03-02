@@ -54,7 +54,7 @@
         </p>
 
         <div class="counts-section">
-          <button class="camera-btn" @click="takeScreenshot">📸</button>
+          <!-- <button class="camera-btn" @click="takeScreenshot">📸</button>
           <div class="counts-wrapper" ref="countsRef">
             <div class="screenshot-date"> 📅 {{ todayDisplay }}</div>
             <div class="counts">
@@ -67,10 +67,10 @@
                 Total Tiffins: {{ totalTiffins }}
               </div>
             </div>
-          </div> 
-          <span v-if="!canSubmitNow" style="color: red; margin-top: 2px; display: block; text-align: center;">
+          </div>  -->
+          <!-- <span v-if="!canSubmitNow" style="color: red; margin-top: 2px; display: block; text-align: center;">
             or
-          </span>
+          </span> -->
           <button v-if="whatsApp && !canSubmitNow" class="whatsapp-btn" @click="sendToWhatsApp">Share on WhatsApp </button>
 
           <!-- 👇 HERE (inside card) -->
@@ -248,7 +248,7 @@ onMounted(async () => {
       submitted.value = true
       name.value = data.name
       foodType.value = data.selection || ''
-      if (name.value == 'HARISH' || name.value == 'DHAWAL' || name.value == 'YOGESH') {
+      if (name.value == 'HARISH' || name.value == 'DHAWAL' || name.value == 'YOGESH' || name.value == 'ARCHANA') {
         whatsApp.value = true
       }
     } else {
